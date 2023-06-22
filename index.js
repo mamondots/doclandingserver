@@ -7,7 +7,15 @@ const port = process.env.PORT || 5000
 
 //middlewere
 
-app.use(cors())
+const corsConfig = {
+  origin: '*',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE']
+}
+
+app.use(cors(corsConfig))
+app.options("", cors(corsConfig))
+
 app.use(express.json())
 
 
@@ -27,7 +35,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    //await client.connect();
 
     const doctorCollection = client.db('Doctor').collection('CartDoctor')
     const reviewsCollection = client.db('Doctor').collection('reviews')
@@ -41,7 +49,7 @@ async function run() {
     app.get('/users', async (req, res) => {
       const result = await usersCollection.find().toArray()
       res.send(result)
-  })
+    })
 
     //post user
 
@@ -75,7 +83,7 @@ async function run() {
 
     //post doctor
 
-    app.post('/doctors',async(req,res) =>{
+    app.post('/doctors', async (req, res) => {
       const doctor = req.body
       console.log(doctor)
       const result = await doctorCollection.insertOne(doctor)
@@ -85,16 +93,16 @@ async function run() {
 
     //update doctor
 
-    app.patch('/doctors/:id',async(req,res) =>{
+    app.patch('/doctors/:id', async (req, res) => {
       const id = req.params.id
       const updatedData = req.body
-      const filter = {_id : new ObjectId(id)}
+      const filter = { _id: new ObjectId(id) }
       const updatedDoc = {
         $set: {
           ...updatedData
         }
       }
-      const result = await doctorCollection.updateOne(filter,updatedDoc)
+      const result = await doctorCollection.updateOne(filter, updatedDoc)
       res.send(result)
     })
 
@@ -103,14 +111,14 @@ async function run() {
 
     app.delete('/doctors/:id', async (req, res) => {
       const id = req.params.id
-      const query = {_id: new ObjectId(id)}
+      const query = { _id: new ObjectId(id) }
       const result = await doctorCollection.deleteOne(query)
       res.send(result)
     })
 
     //all appointment
 
-    app.get('/appointments',async(req,res) =>{
+    app.get('/appointments', async (req, res) => {
       const result = await appointmentsCollection.find().toArray()
       res.send(result)
     })
@@ -118,7 +126,7 @@ async function run() {
 
     //post books appiment
 
-    app.post('/bookAppointments', async(req,res) =>{
+    app.post('/bookAppointments', async (req, res) => {
       const bookAppointment = req.body
       console.log(bookAppointment)
       const result = await bookAppointmentsCollection.insertOne(bookAppointment)
